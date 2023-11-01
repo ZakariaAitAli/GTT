@@ -13,6 +13,7 @@
     "@geist-ui/react-icons": "^1.0.1",
     "@nextui-org/react": "^2.1.13",
     "animejs": "^3.2.1",
+    "flowbite": "^2.0.0",
     "framer-motion": "^10.16.4",
     "next": "14.0.1",
     "next-themes": "^0.2.1",
