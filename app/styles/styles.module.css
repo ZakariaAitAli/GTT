@@ -1,0 +1,159 @@
+@import url('https://rsms.me/inter/inter-ui.css');
+::selection {
+    background: #A7CAD1;
+}
+::-moz-selection {
+    background: #A7CAD1;
+}
+
+body {
+    background-image: url("/public/images/image1.jpg");
+    font-size: large;
+    background-size: cover;
+    font-family: 'Inter UI', sans-serif;
+    margin: 0;
+}
+.bg-image {
+    background-image: url("/public/images/image1.jpg");
+}
+.page {
+    background-image: url("/public/images/image1.jpg");
+    display: flex;
+    flex-direction: column;
+    height: calc(100%);
+    position: absolute;
+    place-content: center;
+    width: calc(100% - 40px);
+}
+@media (max-width: 767px) {
+    .page {
+        height: auto;
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+    }
+}
+.container {
+    display: flex;
+    height: 320px;
+    margin: 0 auto;
+    width: 640px;
+}
+@media (max-width: 767px) {
+    .container {
+        flex-direction: column;
+        height: 630px;
+        width: 320px;
+    }
+}
+.left {
+    background: white;
+    height: calc(100% - 40px);
+    top: 20px;
+    position: relative;
+    width: 50%;
+    border-radius: 1px;
+}
+@media (max-width: 767px) {
+    .left {
+        height: 100%;
+        left: 20px;
+        width: calc(100% - 40px);
+        max-height: 270px;
+        border-radius: 1px;
+    }
+}
+.login {
+    font-size: 50px;
+    font-weight: 900;
+    margin: 50px 40px 40px;
+    color: #DAAB54;
+}
+.eula {
+    color: black;
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 40px;
+}
+.right {
+    background: #A7CAD1;
+    box-shadow: 0 0 40px 16px rgba(0, 0, 0, 0.22);
+    color: #F1F1F2;
+    position: relative;
+    width: 50%;
+    border-radius: 5px;
+}
+@media (max-width: 767px) {
+    .right {
+        border-radius: 5px;
+        flex-shrink: 0;
+        height: 100%;
+        width: 100%;
+        max-height: 350px;
+    }
+}
+svg {
+    position: absolute;
+    width: 320px;
+}
+path {
+    fill: none;
+    stroke: url(#linearGradient);
+    stroke-width: 4;
+    stroke-dasharray: 240 1386;
+}
+.form {
+    margin: 40px;
+    position: absolute;
+}
+label {
+    color: white;
+    display: block;
+    font-size: 14px;
+    height: 16px;
+    margin-top: 20px;
+    margin-bottom: 5px;
+}
+input {
+    background: transparent;
+    border: 0;
+    color: #f2f2f2;
+    font-size: 20px;
+    height: 30px;
+    line-height: 30px;
+    outline: none !important;
+    width: 100%;
+}
+input::-moz-focus-inner {
+    border: 0;
+}
+#submit {
+    color: #707075;
+    margin-top: 40px;
+    transition: color 300ms;
+}
+#submit:focus {
+    color: #f2f2f2;
+}
+#submit:active {
+    color: #d0d0d2;
+}
+
+ul {
+    list-style-type: none;
+}
+
+.li-space-lg li {
+    margin-bottom: 0.5rem;
+}
+
+a {
+    color: #667077;
+    text-decoration: underline;
+}
+
+a:hover {
+    color: #667077;
+    text-decoration: underline;
+}
+
+
