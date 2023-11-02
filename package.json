@@ -18,6 +18,8 @@
     "@fullcalendar/timegrid": "^6.1.9",
     "@geist-ui/icons": "^1.0.2",
     "@geist-ui/react-icons": "^1.0.1",
+    "@headlessui/react": "^1.7.17",
+    "@heroicons/react": "^2.0.18",
     "@nextui-org/react": "^2.1.13",
     "animejs": "^3.2.1",
     "bootstrap": "^5.3.2",
