@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@fullcalendar/bootstrap5": "^6.1.9",
     "@fullcalendar/common": "^5.11.5",
     "@fullcalendar/core": "^6.1.9",
     "@fullcalendar/daygrid": "^6.1.9",
@@ -19,6 +20,8 @@
     "@geist-ui/react-icons": "^1.0.1",
     "@nextui-org/react": "^2.1.13",
     "animejs": "^3.2.1",
+    "bootstrap": "^5.3.2",
+    "bootstrap-icons": "^1.11.1",
     "flowbite": "^2.0.0",
     "framer-motion": "^10.16.4",
     "fullcalendar": "^6.1.9",
