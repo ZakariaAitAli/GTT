@@ -7,6 +7,9 @@ import { Fragment, useEffect, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { CheckIcon, ExclamationTriangleIcon } from '@heroicons/react/20/solid'
 import { EventSourceInput } from '@fullcalendar/core/index.js'
+import axios from 'axios';
+import { useRouter } from "next/navigation";
+import { set } from 'animejs'
 
 
 interface Event {
@@ -34,6 +37,23 @@ export default function Home() {
         allDay: false,
         id: 0
     })
+
+    const [startTime, setStartTime] = useState("");
+    const [endTime, setEndTime] = useState("");
+    const [pause, setBreak] = useState("");
+    const [error, setError] = useState(false);
+    const router = useRouter();
+    const [selectedTime, setSelectedTime] = useState(null);
+
+    const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        const buttonValue = event.currentTarget.value;
+        console.log('Clicked button value: ' + buttonValue);
+        var time = (typeof newEvent.start === 'string' ? newEvent.start : newEvent.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }));
+        if (buttonValue == "start") { setStartTime(time); }
+        else if (buttonValue == "end") { setEndTime(time); }
+    };
+
+
 
     useEffect(() => {
         let draggableEl = document.getElementById('draggable-el')
@@ -104,7 +124,7 @@ export default function Home() {
         })
     }
 
-    function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault()
         setAllEvents([...allEvents, newEvent])
         setShowModal(false)
@@ -119,9 +139,30 @@ export default function Home() {
         console.log("time" + newEvent.start);
         console.log("time:2  " + (typeof newEvent.start === 'string' ? newEvent.start : newEvent.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })));
 
-        // create a var to store the time
-        var time = (typeof newEvent.start === 'string' ? newEvent.start : newEvent.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }));
+
+        try {
+            const response = await axios.post(
+                'http://localhost:8080/GestionTempsTravail_war_exploded/Servlets.workTimeServlet',
+                `start_time=${startTime}&end_time=${endTime}`,
+                {
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                }
+            );
+
+            if (response.status === 200) {
+                console.log("ouliaa");
+                router.push('/test');
+            } else {
+                setError(true);
+            }
+        } catch (error) {
+            console.error(error);
+            setError(true);
+        }
     }
+
 
     return (
         <>
@@ -275,7 +316,7 @@ export default function Home() {
                                                     className="text-base font-semibold leading-6 text-gray-900">
                                                     Add Event
                                                 </Dialog.Title>
-                                                <form action="submit" onSubmit={handleSubmit}>
+                                                <form action="submit" onSubmit={handleSubmit} method="post">
                                                     <div className="mt-2">
                                                         <input type="text" name="title" className="block w-full rounded-md border-0 py-1.5 text-gray-900
                             shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 
@@ -288,16 +329,31 @@ export default function Home() {
                                                     <div
                                                         className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
                                                         <button
+                                                            name="start"
+                                                            value="start"
                                                             type="submit"
                                                             className="inline-flex w-full justify-center rounded-md bg-violet-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600 sm:col-start-2 disabled:opacity-25"
-                                                            disabled={newEvent.title === ''}
+                                                            //disabled={newEvent.title === ''}
+                                                            onClick={handleButtonClick}
+
                                                         >
-                                                            Create
+                                                            start of the day
+                                                        </button>
+
+                                                        <button
+                                                            type="submit"
+                                                            name="end"
+                                                            value="end"
+                                                            className="inline-flex w-full justify-center rounded-md bg-violet-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600 sm:col-start-2 disabled:opacity-25"
+                                                            //disabled={newEvent.title === ''}
+                                                            onClick={handleButtonClick}
+                                                        >
+                                                            End Of The day
                                                         </button>
                                                         <button
                                                             type="button"
                                                             className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
-                                                            onClick={handleCloseModal}
+                                                        //onClick={handleCloseModal}
 
                                                         >
                                                             Cancel

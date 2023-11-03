@@ -3,9 +3,7 @@
 import React, { useState } from "react";
 import { Eye, EyeOff } from '@geist-ui/icons';
 import { Input, user } from "@nextui-org/react";
-
 import axios from 'axios';
-
 import { useRouter } from "next/navigation";
 
 
@@ -13,7 +11,6 @@ import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
     const [isVisible, setIsVisible] = React.useState(false);
-
     const toggleVisibility = () => setIsVisible(!isVisible);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -21,7 +18,7 @@ export default function LoginPage() {
     const router = useRouter();
 
 
-    const handleLogin = async (e) => {
+    const handleLogin = async (e: { preventDefault: () => void; }) => {
         e.preventDefault(); // Prevent the default form submission
 
         try {
@@ -35,10 +32,11 @@ export default function LoginPage() {
                 }
             );
 
-            if (response.status === 200) { // Check the status code instead of response.ok
-                // Handle successful login
-                // You can redirect or update the UI as needed
+            if (response.status === 200) {
+
                 console.log("ouliaa");
+                const idEmployee = response.data.idEmployee;
+                console.log('idEmployee:', idEmployee);
                 router.push('/test');
             } else {
                 setError(true);
@@ -49,34 +47,7 @@ export default function LoginPage() {
         }
     };
     return (
-        // <div className="flex flex-col gap-4">
-        //     <div className="flex flex-col gap-4">
-        //         <div className="flex w-full flex-wrap items-end md:flex-nowrap mb-6 md:mb-0 gap-4">
-        //             <Input
-        //                 type="email"
-        //                 label="Email"
-        //                 variant="bordered"
-        //                 placeholder="Enter your email"
-        //                 className="max-w-xs"
-        //             />
-        //             <Input
-        //                 label="Password"
-        //                 variant="bordered"
-        //                 placeholder="Enter your password"
-        //                 endContent={
-        //                     <button className="focus:outline-none" type="button" onClick={toggleVisibility}>
-        //                         {isVisible ? (
-        //                             <EyeOff className="text-2xl text-default-400 pointer-events-none" />
-        //                         ) : (
-        //                             <Eye className="text-2xl text-default-400 pointer-events-none" />
-        //                         )}
-        //                     </button>
-        //                 }
-        //                 type={isVisible ? "text" : "password"}
-        //                 className="max-w-xs"
-        //             />
-        //         </div>
-        //     </div>
+
         <section className="bg-gray-50 dark:bg-gray-900">
             <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
                 <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
