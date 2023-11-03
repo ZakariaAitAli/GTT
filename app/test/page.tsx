@@ -52,23 +52,35 @@ export default function Home() {
 
     function handleDateClick(arg: { date: Date, allDay: boolean }) {
         setNewEvent({...newEvent, start: arg.date, allDay: arg.allDay, id: new Date().getTime()})
+
+        console.log("Date Click Data:", arg.date);
+        console.log("All Day:", arg.allDay);
+        console.log("New Event Data:", newEvent);
+
         setShowModal(true)
     }
 
     function addEvent(data: DropArg) {
         const event = {...newEvent, start: data.date.toISOString(), title: data.draggedEl.innerText, allDay: data.allDay, id: new Date().getTime()}
         setAllEvents([...allEvents, event])
+
+        console.log("Dropped Event Data:", event);
     }
 
     function handleDeleteModal(data: { event: { id: string } }) {
         setShowDeleteModal(true)
         setIdToDelete(Number(data.event.id))
+
+        console.log("Event to Delete:", data.event);
     }
 
     function handleDelete() {
         setAllEvents(allEvents.filter(event => Number(event.id) !== Number(idToDelete)))
         setShowDeleteModal(false)
         setIdToDelete(null)
+
+
+        console.log("Deleted Event ID:", idToDelete);
     }
 
     function handleCloseModal() {
@@ -81,6 +93,8 @@ export default function Home() {
         })
         setShowDeleteModal(false)
         setIdToDelete(null)
+
+        console.log("Modal Closed");
     }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -100,6 +114,13 @@ export default function Home() {
             allDay: false,
             id: 0
         })
+
+        console.log("Submitted Event Data:", newEvent);
+        console.log("time" + newEvent.start);
+        console.log("time:2  " + (typeof newEvent.start === 'string' ? newEvent.start : newEvent.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })));
+
+        // create a var to store the time
+        var time = (typeof newEvent.start === 'string' ? newEvent.start : newEvent.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }));
     }
 
     return (

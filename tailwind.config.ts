@@ -18,6 +18,11 @@ const config: Config = {
         md: '1.5rem',
         lg: '2rem'
       }
+    },
+    extend: {
+      backgroundImage: {
+        'hero-pattern': "url('/img/hero-pattern.svg')",
+      }
     }
   },
   plugins: [
