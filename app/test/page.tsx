@@ -1,12 +1,12 @@
 "use client"
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
-import interactionPlugin, {Draggable, DropArg} from '@fullcalendar/interaction'
+import interactionPlugin, { Draggable, DropArg } from '@fullcalendar/interaction'
 import timeGridPlugin from '@fullcalendar/timegrid'
-import {Fragment, useEffect, useState} from 'react'
-import {Dialog, Transition} from '@headlessui/react'
-import {CheckIcon, ExclamationTriangleIcon} from '@heroicons/react/20/solid'
-import {EventSourceInput} from '@fullcalendar/core/index.js'
+import { Fragment, useEffect, useState } from 'react'
+import { Dialog, Transition } from '@headlessui/react'
+import { CheckIcon, ExclamationTriangleIcon } from '@heroicons/react/20/solid'
+import { EventSourceInput } from '@fullcalendar/core/index.js'
 
 
 interface Event {
@@ -18,11 +18,11 @@ interface Event {
 
 export default function Home() {
     const [events, setEvents] = useState([
-        {title: 'event 1', id: '1'},
-        {title: 'event 2', id: '2'},
-        {title: 'event 3', id: '3'},
-        {title: 'event 4', id: '4'},
-        {title: 'event 5', id: '5'},
+        { title: 'event 1', id: '1' },
+        { title: 'event 2', id: '2' },
+        { title: 'event 3', id: '3' },
+        { title: 'event 4', id: '4' },
+        { title: 'event 5', id: '5' },
     ])
     const [allEvents, setAllEvents] = useState<Event[]>([])
     const [showModal, setShowModal] = useState(false)
@@ -44,14 +44,14 @@ export default function Home() {
                     let title = eventEl.getAttribute("title")
                     let id = eventEl.getAttribute("data")
                     let start = eventEl.getAttribute("start")
-                    return {title, id, start}
+                    return { title, id, start }
                 }
             })
         }
     }, [])
 
     function handleDateClick(arg: { date: Date, allDay: boolean }) {
-        setNewEvent({...newEvent, start: arg.date, allDay: arg.allDay, id: new Date().getTime()})
+        setNewEvent({ ...newEvent, start: arg.date, allDay: arg.allDay, id: new Date().getTime() })
 
         console.log("Date Click Data:", arg.date);
         console.log("All Day:", arg.allDay);
@@ -61,7 +61,7 @@ export default function Home() {
     }
 
     function addEvent(data: DropArg) {
-        const event = {...newEvent, start: data.date.toISOString(), title: data.draggedEl.innerText, allDay: data.allDay, id: new Date().getTime()}
+        const event = { ...newEvent, start: data.date.toISOString(), title: data.draggedEl.innerText, allDay: data.allDay, id: new Date().getTime() }
         setAllEvents([...allEvents, event])
 
         console.log("Dropped Event Data:", event);
@@ -136,9 +136,9 @@ export default function Home() {
                             ]}
                             initialView={"timeGridWeek"}
                             headerToolbar={{
-                                left: 'prev,next today',
+                                left: '',
                                 center: 'title',
-                                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                                right: ''
                             }}
                             height={"auto"}
                             events={allEvents as EventSourceInput}
@@ -147,6 +147,7 @@ export default function Home() {
                             droppable={true}
                             selectable={true}
                             selectMirror={true}
+
                             slotMinTime={"08:00:00"}
                             slotMaxTime={"32:00:00"}
                             dateClick={handleDateClick}
@@ -180,7 +181,7 @@ export default function Home() {
                             leaveTo="opacity-0"
 
                         >
-                            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"/>
+                            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
                         </Transition.Child>
 
                         <div className="fixed inset-0 z-10 overflow-y-auto">
@@ -203,11 +204,11 @@ export default function Home() {
                                                 <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center
                       justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
                                                     <ExclamationTriangleIcon className="h-6 w-6 text-red-600"
-                                                                             aria-hidden="true"/>
+                                                        aria-hidden="true" />
                                                 </div>
                                                 <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                                                     <Dialog.Title as="h3"
-                                                                  className="text-base font-semibold leading-6 text-gray-900">
+                                                        className="text-base font-semibold leading-6 text-gray-900">
                                                         Delete Event
                                                     </Dialog.Title>
                                                     <div className="mt-2">
@@ -225,7 +226,7 @@ export default function Home() {
                                             </button>
                                             <button type="button" className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900
                       shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                                                    onClick={handleCloseModal}
+                                                onClick={handleCloseModal}
                                             >
                                                 Cancel
                                             </button>
@@ -247,7 +248,7 @@ export default function Home() {
                             leaveFrom="opacity-100"
                             leaveTo="opacity-0"
                         >
-                            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"/>
+                            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
                         </Transition.Child>
 
                         <div className="fixed inset-0 z-10 overflow-y-auto">
@@ -267,11 +268,11 @@ export default function Home() {
                                         <div>
                                             <div
                                                 className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-                                                <CheckIcon className="h-6 w-6 text-green-600" aria-hidden="true"/>
+                                                <CheckIcon className="h-6 w-6 text-green-600" aria-hidden="true" />
                                             </div>
                                             <div className="mt-3 text-center sm:mt-5">
                                                 <Dialog.Title as="h3"
-                                                              className="text-base font-semibold leading-6 text-gray-900">
+                                                    className="text-base font-semibold leading-6 text-gray-900">
                                                     Add Event
                                                 </Dialog.Title>
                                                 <form action="submit" onSubmit={handleSubmit}>
@@ -281,8 +282,8 @@ export default function Home() {
                             focus:ring-2 
                             focus:ring-inset focus:ring-violet-600 
                             sm:text-sm sm:leading-6"
-                                                               value={newEvent.title} onChange={(e) => handleChange(e)}
-                                                               placeholder="Title"/>
+                                                            value={newEvent.title} onChange={(e) => handleChange(e)}
+                                                            placeholder="Title" />
                                                     </div>
                                                     <div
                                                         className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
