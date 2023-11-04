@@ -25,7 +25,7 @@ export default function LoginPage() {
 
         try {
             const response = await axios.post(
-                'http://localhost:8080/GestionTempsTravail-1.0-SNAPSHOT/Servlets.LoginServlet',
+                'http://localhost:8080/GestionTempsTravail_war_exploded/Servlets.LoginServlet',
                 `email=${email}&password=${password}`,
                 {
                     headers: {
@@ -38,9 +38,15 @@ export default function LoginPage() {
 
                 console.log("ouliaa");
                 const idEmployee = response.data.idEmployee;
+                const isAdmin = response.data.isAdmin;
+                console.log('isAdmin:', isAdmin);
                 console.log('idEmployee:', idEmployee);
                 sessionStorage.setItem("idEmployee", JSON.stringify(idEmployee));
-                router.push('/test');
+                if (isAdmin == true) {
+                    router.push('/admin?idEmployee=' + idEmployee + '&isAdmin=' + isAdmin);
+                } else {
+                    router.push('/test?idEmployee=' + idEmployee + '&isAdmin=' + isAdmin);
+                }
             } else {
                 setError(true);
             }
