@@ -95,7 +95,7 @@ export default function Home() {
 
     //GET REQUEST TO THE SERVER :
     useEffect(() => {
-        const apiUrl = "http://localhost:8080/GestionTempsTravail_war_exploded/Servlets.workTimeServlet?idEmployee=" + idEmployee;
+        const apiUrl = "http://localhost:8080/GestionTempsTravail-1.0-SNAPSHOT/Servlets.workTimeServlet?idEmployee=" + idEmployee;
         axios
             .get(apiUrl)
             .then((response) => {
@@ -126,7 +126,7 @@ export default function Home() {
 
         try {
             const response = await axios.post(
-                'http://localhost:8080/GestionTempsTravail_war_exploded/Servlets.workTimeServlet',
+                'http://localhost:8080/GestionTempsTravail-1.0-SNAPSHOT/Servlets.workTimeServlet',
                 `start_time=${startTime}&end_time=${endTime}&pause=${pause}&idEmployee=${idEmployee}`,
                 {
                     headers: {

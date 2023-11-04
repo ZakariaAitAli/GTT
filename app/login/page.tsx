@@ -25,7 +25,7 @@ export default function LoginPage() {
 
         try {
             const response = await axios.post(
-                'http://localhost:8080/GestionTempsTravail_war_exploded/Servlets.LoginServlet',
+                'http://localhost:8080/GestionTempsTravail-1.0-SNAPSHOT/Servlets.LoginServlet',
                 `email=${email}&password=${password}`,
                 {
                     headers: {

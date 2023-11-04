@@ -20,7 +20,7 @@ const Raport: React.FC = () => {
     const [error, setError] = useState<Error | null>(null);
 
     useEffect(() => {
-        const apiUrl = `http://localhost:8080/GestionTempsTravail_war_exploded/Servlets.RapportServlet?id=${id}`;
+        const apiUrl = `http://localhost:8080/GestionTempsTravail-1.0-SNAPSHOT/Servlets.RapportServlet?id=${id}`;
 
         axios
             .get(apiUrl)
@@ -37,7 +37,7 @@ const Raport: React.FC = () => {
 
     const handleDownload = (reportId: any) => {
         // Make a GET request to download the PDF using a dynamically generated URL
-        window.open(`http://localhost:8080/GestionTempsTravail_war_exploded/Servlets.PdfDownloadServlet?id=` + id, '_blank');
+        window.open(`http://localhost:8080/GestionTempsTravail-1.0-SNAPSHOT/Servlets.PdfDownloadServlet?id=` + id, '_blank');
 
         /* const apiUrl = "http://localhost:8080/GestionTempsTravail_war_exploded/Servlets.PdfDownloadServlet?id=" + id;
  

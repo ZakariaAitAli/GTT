@@ -36,7 +36,7 @@ export default function MoodPage() {
     useEffect(() => {
 
 
-        const apiUrl = "http://localhost:8080/GestionTempsTravail_war_exploded/Servlets.Mood?id=" + id;
+        const apiUrl = "http://localhost:8080/GestionTempsTravail-1.0-SNAPSHOT/Servlets.Mood?id=" + id;
 
         axios
             .get(apiUrl)
@@ -59,7 +59,7 @@ export default function MoodPage() {
         if (selectedMood) {
             console.log(id);
             axios
-                .post('http://localhost:8080/GestionTempsTravail_war_exploded/Servlets.Mood',
+                .post('http://localhost:8080/GestionTempsTravail-1.0-SNAPSHOT/Servlets.Mood',
                     `id=${id}&humeur=${selectedMood}`)
                 .then((response) => {
                     if (response.status == 200) {

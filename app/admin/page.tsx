@@ -21,7 +21,7 @@ const Admin: React.FC = () => {
     const [error, setError] = useState(false);
 
     useEffect(() => {
-        const apiUrl = "http://localhost:8080/GestionTempsTravail_war_exploded/Servlets.EmployeeServlet";
+        const apiUrl = "http://localhost:8080/GestionTempsTravail-1.0-SNAPSHOT/Servlets.EmployeeServlet";
 
         axios.get(apiUrl)
             .then((response) => {
