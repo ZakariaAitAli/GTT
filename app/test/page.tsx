@@ -1,15 +1,17 @@
 "use client"
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
-import interactionPlugin, {Draggable, DropArg} from '@fullcalendar/interaction'
+import interactionPlugin, { Draggable, DropArg } from '@fullcalendar/interaction'
 import timeGridPlugin from '@fullcalendar/timegrid'
-import {Fragment, useEffect, useState} from 'react'
-import {Dialog, Transition} from '@headlessui/react'
-import {CheckIcon, ExclamationTriangleIcon} from '@heroicons/react/20/solid'
-import {EventSourceInput} from '@fullcalendar/core/index.js'
+import { Fragment, useEffect, useState } from 'react'
+import { Dialog, Transition } from '@headlessui/react'
+import { CheckIcon, ExclamationTriangleIcon } from '@heroicons/react/20/solid'
+import { EventSourceInput } from '@fullcalendar/core/index.js'
 import axios from 'axios';
-import {useRouter} from "next/navigation";
-import {set} from 'animejs'
+import { useRouter } from "next/navigation";
+import { set } from 'animejs'
+import { useSearchParams } from 'next/navigation';
+import NavBar from '../components/navBar';
 
 
 interface Event {
@@ -21,11 +23,11 @@ interface Event {
 
 export default function Home() {
     const [events, setEvents] = useState([
-        {title: 'event 1', id: '1'},
-        {title: 'event 2', id: '2'},
-        {title: 'event 3', id: '3'},
-        {title: 'event 4', id: '4'},
-        {title: 'event 5', id: '5'},
+        { title: 'event 1', id: '1' },
+        { title: 'event 2', id: '2' },
+        { title: 'event 3', id: '3' },
+        { title: 'event 4', id: '4' },
+        { title: 'event 5', id: '5' },
     ])
     const [allEvents, setAllEvents] = useState<Event[]>([])
     const [showModal, setShowModal] = useState(false)
@@ -37,16 +39,22 @@ export default function Home() {
         allDay: false,
         id: 0
     })
+    const searchParams = useSearchParams();
+    const idEmployee = searchParams.get('idEmployee');
+
+    if (idEmployee == null) {
+        window.location.href = "/login";
+    }
 
     const [startTime, setStartTime] = useState("");
     const [endTime, setEndTime] = useState("");
     const [pause, setBreak] = useState("");
     const [error, setError] = useState(false);
     const router = useRouter();
-    const [data, setData] = useState({isStart: false, isEnd: false});
+    const [data, setData] = useState({ isStart: false, isEnd: false });
     const [loading, setLoading] = useState(true);
-    //const [idEmployee, setIdEmployee] = useState("");
-    var idEmployee = 0;
+
+
 
 
     const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -69,7 +77,7 @@ export default function Home() {
 
 
     useEffect(() => {
-        const idEmployee = sessionStorage?.getItem("idEmployee");
+
 
         let draggableEl = document.getElementById('draggable-el')
         if (draggableEl) {
@@ -79,7 +87,7 @@ export default function Home() {
                     let title = eventEl.getAttribute("title")
                     let id = eventEl.getAttribute("data")
                     let start = eventEl.getAttribute("start")
-                    return {title, id, start}
+                    return { title, id, start }
                 }
             })
         }
@@ -130,9 +138,10 @@ export default function Home() {
 
             if (response.status === 200) {
                 console.log("ouliaa");
-                router.push('/test');
+                // window.location.href = '/test?idEmployee=' + idEmployee;
+                router.push('/test?idEmployee=' + idEmployee);
             } else if (response.status === 401) {
-                router.push('/login');
+                // router.push('/login');
             } else {
 
                 setError(true);
@@ -146,7 +155,7 @@ export default function Home() {
 
 
     function handleDateClick(arg: { date: Date, allDay: boolean }) {
-        setNewEvent({...newEvent, start: arg.date, allDay: arg.allDay, id: new Date().getTime()})
+        setNewEvent({ ...newEvent, start: arg.date, allDay: arg.allDay, id: new Date().getTime() })
 
         console.log("Date Click Data:", arg.date);
         console.log("All Day:", arg.allDay);
@@ -164,6 +173,9 @@ export default function Home() {
             id: new Date().getTime()
         }
         setAllEvents([...allEvents, event])
+
+        setStartTime("00:00:00");
+        setEndTime("00:00:00")
 
         console.log("Dropped Event Data:", event);
     }
@@ -208,6 +220,7 @@ export default function Home() {
 
     return (
         <>
+            <NavBar />
             <main className="bg-[url('https://flowbite.s3.amazonaws.com/docs/jumbotron/hero-pattern.svg')] flex min-h-screen flex-col items-center justify-between p-24">
                 <div className="grid grid-cols">
                     <div className="col-span-8">
@@ -253,7 +266,7 @@ export default function Home() {
                             leaveTo="opacity-0"
 
                         >
-                            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"/>
+                            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
                         </Transition.Child>
 
                         <div className="fixed inset-0 z-10 overflow-y-auto">
@@ -276,11 +289,11 @@ export default function Home() {
                                                 <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center
                       justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
                                                     <ExclamationTriangleIcon className="h-6 w-6 text-red-600"
-                                                                             aria-hidden="true"/>
+                                                        aria-hidden="true" />
                                                 </div>
                                                 <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                                                     <Dialog.Title as="h3"
-                                                                  className="text-base font-semibold leading-6 text-gray-900">
+                                                        className="text-base font-semibold leading-6 text-gray-900">
                                                         Delete Event
                                                     </Dialog.Title>
                                                     <div className="mt-2">
@@ -298,7 +311,7 @@ export default function Home() {
                                             </button>
                                             <button type="button" className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900
                       shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                                                    onClick={handleCloseModal}
+                                                onClick={handleCloseModal}
                                             >
                                                 Cancel
                                             </button>
@@ -320,7 +333,7 @@ export default function Home() {
                             leaveFrom="opacity-100"
                             leaveTo="opacity-0"
                         >
-                            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"/>
+                            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
                         </Transition.Child>
 
                         <div className="fixed inset-0 z-10 overflow-y-auto">
@@ -340,11 +353,11 @@ export default function Home() {
                                         <div>
                                             <div
                                                 className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-                                                <CheckIcon className="h-6 w-6 text-green-600" aria-hidden="true"/>
+                                                <CheckIcon className="h-6 w-6 text-green-600" aria-hidden="true" />
                                             </div>
                                             <div className="mt-3 text-center sm:mt-5">
                                                 <Dialog.Title as="h3"
-                                                              className="text-base font-semibold leading-6 text-gray-900">
+                                                    className="text-base font-semibold leading-6 text-gray-900">
                                                     Add Event
                                                 </Dialog.Title>
                                                 <form action="submit" onSubmit={handleSubmit} method="post">
@@ -354,7 +367,7 @@ export default function Home() {
                                                             value="start"
                                                             type="submit"
                                                             className="inline-flex bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 items-center justify-between w-full p-5 text-white-500 border border-gray-200 rounded-lg cursor-pointer dark:hover:text-black-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700 disabled:opacity-20"
-                                                            disabled={data.isStart}
+                                                            // disabled={data.isStart}
                                                             onClick={handleButtonClick}>
                                                             Start of Work
                                                         </button>
@@ -363,7 +376,7 @@ export default function Home() {
                                                             name="pause"
                                                             value="pause"
                                                             className="inline-flex bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 items-center justify-between w-full p-5 text-white-500 border border-gray-200 rounded-lg cursor-pointer dark:hover:text-black-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700 disabled:opacity-20"
-                                                            disabled={!data.isStart}
+                                                            //disabled={!data.isStart}
                                                             onClick={handleButtonClick}
                                                         >
                                                             Pause
@@ -373,7 +386,7 @@ export default function Home() {
                                                             name="end"
                                                             value="end"
                                                             className="inline-flex bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 items-center justify-between w-full p-5 text-black-500 border border-gray-200 rounded-lg cursor-pointer dark:hover:text-black-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700 disabled:opacity-20"
-                                                            disabled={data.isEnd || (!data.isEnd && !data.isStart)}
+                                                            //disabled={data.isEnd || (!data.isEnd && !data.isStart)}
                                                             onClick={handleButtonClick}
                                                         >
                                                             End of Work
