@@ -208,7 +208,7 @@ export default function Home() {
 
     return (
         <>
-            <main className="flex min-h-screen flex-col items-center justify-between p-24">
+            <main className="bg-[url('https://flowbite.s3.amazonaws.com/docs/jumbotron/hero-pattern.svg')] flex min-h-screen flex-col items-center justify-between p-24">
                 <div className="grid grid-cols">
                     <div className="col-span-8">
                         <FullCalendar
