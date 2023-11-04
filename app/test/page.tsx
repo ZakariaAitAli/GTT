@@ -1,12 +1,15 @@
 "use client"
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
-import interactionPlugin, {Draggable, DropArg} from '@fullcalendar/interaction'
+import interactionPlugin, { Draggable, DropArg } from '@fullcalendar/interaction'
 import timeGridPlugin from '@fullcalendar/timegrid'
-import {Fragment, useEffect, useState} from 'react'
-import {Dialog, Transition} from '@headlessui/react'
-import {CheckIcon, ExclamationTriangleIcon} from '@heroicons/react/20/solid'
-import {EventSourceInput} from '@fullcalendar/core/index.js'
+import { Fragment, useEffect, useState } from 'react'
+import { Dialog, Transition } from '@headlessui/react'
+import { CheckIcon, ExclamationTriangleIcon } from '@heroicons/react/20/solid'
+import { EventSourceInput } from '@fullcalendar/core/index.js'
+import axios from 'axios';
+import { useRouter } from "next/navigation";
+import { set } from 'animejs'
 
 
 interface Event {
@@ -18,11 +21,11 @@ interface Event {
 
 export default function Home() {
     const [events, setEvents] = useState([
-        {title: 'event 1', id: '1'},
-        {title: 'event 2', id: '2'},
-        {title: 'event 3', id: '3'},
-        {title: 'event 4', id: '4'},
-        {title: 'event 5', id: '5'},
+        { title: 'event 1', id: '1' },
+        { title: 'event 2', id: '2' },
+        { title: 'event 3', id: '3' },
+        { title: 'event 4', id: '4' },
+        { title: 'event 5', id: '5' },
     ])
     const [allEvents, setAllEvents] = useState<Event[]>([])
     const [showModal, setShowModal] = useState(false)
@@ -35,6 +38,27 @@ export default function Home() {
         id: 0
     })
 
+    const [startTime, setStartTime] = useState("");
+    const [endTime, setEndTime] = useState("");
+    const [pause, setBreak] = useState("");
+    const [error, setError] = useState(false);
+    const router = useRouter();
+    const [data, setData] = useState({ isStart: false, isEnd: false });
+    const [loading, setLoading] = useState(true);
+    const [idEmployee, setIdEmployee] = useState("");
+
+
+    const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        const buttonValue = event.currentTarget.value;
+        console.log('Clicked button value: ' + buttonValue);
+        var time = (typeof newEvent.start === 'string' ? newEvent.start : newEvent.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }));
+        if (buttonValue == "start") { setStartTime(time); }
+        else if (buttonValue == "end") { setEndTime(time); }
+        else if (buttonValue == "pause") { setBreak(time); }
+    };
+
+
+
     useEffect(() => {
         let draggableEl = document.getElementById('draggable-el')
         if (draggableEl) {
@@ -44,14 +68,78 @@ export default function Home() {
                     let title = eventEl.getAttribute("title")
                     let id = eventEl.getAttribute("data")
                     let start = eventEl.getAttribute("start")
-                    return {title, id, start}
+                    return { title, id, start }
                 }
             })
         }
     }, [])
 
+    //GET REQUEST TO THE SERVER :
+    useEffect(() => {
+
+
+        const apiUrl = "http://localhost:8080/GestionTempsTravail_war_exploded/Servlets.workTimeServlet?idEmployee=" + sessionStorage.getItem("idEmployee");
+
+        axios
+            .get(apiUrl)
+            .then((response) => {
+                setData(response.data);
+                console.log(response.data.isStart);
+                console.log(response.data.isEnd);
+            })
+            .catch((err) => {
+                if (err.response && err.response.status === 405) {
+                    router.push("/login");
+                } else {
+                    setError(err);
+                }
+            });
+    }, []);
+
+    async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault()
+        setAllEvents([...allEvents, newEvent])
+        setShowModal(false)
+        setNewEvent({
+            title: '',
+            start: '',
+            allDay: false,
+            id: 0
+        })
+
+
+        try {
+            const response = await axios.post(
+                'http://localhost:8080/GestionTempsTravail_war_exploded/Servlets.workTimeServlet',
+                `start_time=${startTime}&end_time=${endTime}&pause=${pause}&idEmployee=${idEmployee}`,
+                {
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                }
+            );
+
+
+            if (response.status === 200) {
+                console.log("ouliaa");
+                router.push('/test');
+            } else if (response.status === 499) {
+                router.push('/login');
+            }
+            else {
+
+                setError(true);
+            }
+        } catch (err) {
+            console.error(error);
+
+            setError(true);
+        }
+    }
+
+
     function handleDateClick(arg: { date: Date, allDay: boolean }) {
-        setNewEvent({...newEvent, start: arg.date, allDay: arg.allDay, id: new Date().getTime()})
+        setNewEvent({ ...newEvent, start: arg.date, allDay: arg.allDay, id: new Date().getTime() })
 
         console.log("Date Click Data:", arg.date);
         console.log("All Day:", arg.allDay);
@@ -61,7 +149,7 @@ export default function Home() {
     }
 
     function addEvent(data: DropArg) {
-        const event = {...newEvent, start: data.date.toISOString(), title: data.draggedEl.innerText, allDay: data.allDay, id: new Date().getTime()}
+        const event = { ...newEvent, start: data.date.toISOString(), title: data.draggedEl.innerText, allDay: data.allDay, id: new Date().getTime() }
         setAllEvents([...allEvents, event])
 
         console.log("Dropped Event Data:", event);
@@ -104,24 +192,7 @@ export default function Home() {
         })
     }
 
-    function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-        e.preventDefault()
-        setAllEvents([...allEvents, newEvent])
-        setShowModal(false)
-        setNewEvent({
-            title: '',
-            start: '',
-            allDay: false,
-            id: 0
-        })
 
-        console.log("Submitted Event Data:", newEvent);
-        console.log("time" + newEvent.start);
-        console.log("time:2  " + (typeof newEvent.start === 'string' ? newEvent.start : newEvent.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })));
-
-        // create a var to store the time
-        var time = (typeof newEvent.start === 'string' ? newEvent.start : newEvent.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }));
-    }
 
     return (
         <>
@@ -136,9 +207,9 @@ export default function Home() {
                             ]}
                             initialView={"timeGridWeek"}
                             headerToolbar={{
-                                left: 'prev,next today',
+                                left: '',
                                 center: 'title',
-                                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                                right: ''
                             }}
                             height={"auto"}
                             events={allEvents as EventSourceInput}
@@ -147,6 +218,7 @@ export default function Home() {
                             droppable={true}
                             selectable={true}
                             selectMirror={true}
+
                             slotMinTime={"08:00:00"}
                             slotMaxTime={"32:00:00"}
                             dateClick={handleDateClick}
@@ -180,7 +252,7 @@ export default function Home() {
                             leaveTo="opacity-0"
 
                         >
-                            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"/>
+                            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
                         </Transition.Child>
 
                         <div className="fixed inset-0 z-10 overflow-y-auto">
@@ -203,11 +275,11 @@ export default function Home() {
                                                 <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center
                       justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
                                                     <ExclamationTriangleIcon className="h-6 w-6 text-red-600"
-                                                                             aria-hidden="true"/>
+                                                        aria-hidden="true" />
                                                 </div>
                                                 <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                                                     <Dialog.Title as="h3"
-                                                                  className="text-base font-semibold leading-6 text-gray-900">
+                                                        className="text-base font-semibold leading-6 text-gray-900">
                                                         Delete Event
                                                     </Dialog.Title>
                                                     <div className="mt-2">
@@ -225,7 +297,7 @@ export default function Home() {
                                             </button>
                                             <button type="button" className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900
                       shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                                                    onClick={handleCloseModal}
+                                                onClick={handleCloseModal}
                                             >
                                                 Cancel
                                             </button>
@@ -247,7 +319,7 @@ export default function Home() {
                             leaveFrom="opacity-100"
                             leaveTo="opacity-0"
                         >
-                            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"/>
+                            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
                         </Transition.Child>
 
                         <div className="fixed inset-0 z-10 overflow-y-auto">
@@ -267,31 +339,57 @@ export default function Home() {
                                         <div>
                                             <div
                                                 className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-                                                <CheckIcon className="h-6 w-6 text-green-600" aria-hidden="true"/>
+                                                <CheckIcon className="h-6 w-6 text-green-600" aria-hidden="true" />
                                             </div>
                                             <div className="mt-3 text-center sm:mt-5">
                                                 <Dialog.Title as="h3"
-                                                              className="text-base font-semibold leading-6 text-gray-900">
+                                                    className="text-base font-semibold leading-6 text-gray-900">
                                                     Add Event
                                                 </Dialog.Title>
-                                                <form action="submit" onSubmit={handleSubmit}>
+                                                <form action="submit" onSubmit={handleSubmit} method="post">
                                                     <div className="mt-2">
                                                         <input type="text" name="title" className="block w-full rounded-md border-0 py-1.5 text-gray-900
                             shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 
                             focus:ring-2 
                             focus:ring-inset focus:ring-violet-600 
                             sm:text-sm sm:leading-6"
-                                                               value={newEvent.title} onChange={(e) => handleChange(e)}
-                                                               placeholder="Title"/>
+                                                            value={newEvent.title} onChange={(e) => handleChange(e)}
+                                                            placeholder="Title" />
                                                     </div>
                                                     <div
                                                         className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
+
+
                                                         <button
+                                                            name="start"
+                                                            value="start"
                                                             type="submit"
                                                             className="inline-flex w-full justify-center rounded-md bg-violet-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600 sm:col-start-2 disabled:opacity-25"
-                                                            disabled={newEvent.title === ''}
+                                                            disabled={data.isStart}
+                                                            onClick={handleButtonClick}>
+                                                            Start of Work
+                                                        </button>
+
+                                                        <button
+                                                            type="submit"
+                                                            name="end"
+                                                            value="end"
+                                                            className="inline-flex w-full justify-center rounded-md bg-violet-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600 sm:col-start-2 disabled:opacity-25"
+                                                            disabled={data.isEnd || (!data.isEnd && !data.isStart)}
+                                                            onClick={handleButtonClick}
                                                         >
-                                                            Create
+                                                            End of Work
+                                                        </button>
+
+                                                        <button
+                                                            type="submit"
+                                                            name="pause"
+                                                            value="pause"
+                                                            className="inline-flex w-full justify-center rounded-md bg-violet-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600 sm:col-start-2 disabled:opacity-25"
+                                                            disabled={!data.isStart}
+                                                            onClick={handleButtonClick}
+                                                        >
+                                                            Pause
                                                         </button>
                                                         <button
                                                             type="button"
