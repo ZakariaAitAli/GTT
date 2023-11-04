@@ -88,7 +88,7 @@ export default function Home() {
                 console.log(response.data.isEnd);
             })
             .catch((err) => {
-                if (err.response && err.response.status === 405) {
+                if (err.response && err.response.status === 401) {
                     router.push("/login");
                 } else {
                     setError(err);
@@ -123,7 +123,7 @@ export default function Home() {
             if (response.status === 200) {
                 console.log("ouliaa");
                 router.push('/test');
-            } else if (response.status === 499) {
+            } else if (response.status === 401) {
                 router.push('/login');
             }
             else {
