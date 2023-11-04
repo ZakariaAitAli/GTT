@@ -37,6 +37,7 @@ export default function LoginPage() {
                 console.log("ouliaa");
                 const idEmployee = response.data.idEmployee;
                 console.log('idEmployee:', idEmployee);
+                sessionStorage.setItem("idEmployee", JSON.stringify(idEmployee));
                 router.push('/test');
             } else {
                 setError(true);

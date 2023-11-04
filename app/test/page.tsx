@@ -43,7 +43,10 @@ export default function Home() {
     const [pause, setBreak] = useState("");
     const [error, setError] = useState(false);
     const router = useRouter();
-    const [selectedTime, setSelectedTime] = useState(null);
+    const [data, setData] = useState({ isStart: false, isEnd: false });
+    const [loading, setLoading] = useState(true);
+    const [idEmployee, setIdEmployee] = useState("");
+
 
     const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         const buttonValue = event.currentTarget.value;
@@ -51,6 +54,7 @@ export default function Home() {
         var time = (typeof newEvent.start === 'string' ? newEvent.start : newEvent.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }));
         if (buttonValue == "start") { setStartTime(time); }
         else if (buttonValue == "end") { setEndTime(time); }
+        else if (buttonValue == "pause") { setBreak(time); }
     };
 
 
@@ -69,6 +73,70 @@ export default function Home() {
             })
         }
     }, [])
+
+    //GET REQUEST TO THE SERVER :
+    useEffect(() => {
+
+
+        const apiUrl = "http://localhost:8080/GestionTempsTravail_war_exploded/Servlets.workTimeServlet?idEmployee=" + sessionStorage.getItem("idEmployee");
+
+        axios
+            .get(apiUrl)
+            .then((response) => {
+                setData(response.data);
+                console.log(response.data.isStart);
+                console.log(response.data.isEnd);
+            })
+            .catch((err) => {
+                if (err.response && err.response.status === 405) {
+                    router.push("/login");
+                } else {
+                    setError(err);
+                }
+            });
+    }, []);
+
+    async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault()
+        setAllEvents([...allEvents, newEvent])
+        setShowModal(false)
+        setNewEvent({
+            title: '',
+            start: '',
+            allDay: false,
+            id: 0
+        })
+
+
+        try {
+            const response = await axios.post(
+                'http://localhost:8080/GestionTempsTravail_war_exploded/Servlets.workTimeServlet',
+                `start_time=${startTime}&end_time=${endTime}&pause=${pause}&idEmployee=${idEmployee}`,
+                {
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                }
+            );
+
+
+            if (response.status === 200) {
+                console.log("ouliaa");
+                router.push('/test');
+            } else if (response.status === 499) {
+                router.push('/login');
+            }
+            else {
+
+                setError(true);
+            }
+        } catch (err) {
+            console.error(error);
+
+            setError(true);
+        }
+    }
+
 
     function handleDateClick(arg: { date: Date, allDay: boolean }) {
         setNewEvent({ ...newEvent, start: arg.date, allDay: arg.allDay, id: new Date().getTime() })
@@ -124,44 +192,6 @@ export default function Home() {
         })
     }
 
-    async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-        e.preventDefault()
-        setAllEvents([...allEvents, newEvent])
-        setShowModal(false)
-        setNewEvent({
-            title: '',
-            start: '',
-            allDay: false,
-            id: 0
-        })
-
-        console.log("Submitted Event Data:", newEvent);
-        console.log("time" + newEvent.start);
-        console.log("time:2  " + (typeof newEvent.start === 'string' ? newEvent.start : newEvent.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })));
-
-
-        try {
-            const response = await axios.post(
-                'http://localhost:8080/GestionTempsTravail_war_exploded/Servlets.workTimeServlet',
-                `start_time=${startTime}&end_time=${endTime}`,
-                {
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    }
-                }
-            );
-
-            if (response.status === 200) {
-                console.log("ouliaa");
-                router.push('/test');
-            } else {
-                setError(true);
-            }
-        } catch (error) {
-            console.error(error);
-            setError(true);
-        }
-    }
 
 
     return (
@@ -328,16 +358,16 @@ export default function Home() {
                                                     </div>
                                                     <div
                                                         className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
+
+
                                                         <button
                                                             name="start"
                                                             value="start"
                                                             type="submit"
                                                             className="inline-flex w-full justify-center rounded-md bg-violet-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600 sm:col-start-2 disabled:opacity-25"
-                                                            //disabled={newEvent.title === ''}
-                                                            onClick={handleButtonClick}
-
-                                                        >
-                                                            start of the day
+                                                            disabled={data.isStart}
+                                                            onClick={handleButtonClick}>
+                                                            Start of Work
                                                         </button>
 
                                                         <button
@@ -345,15 +375,26 @@ export default function Home() {
                                                             name="end"
                                                             value="end"
                                                             className="inline-flex w-full justify-center rounded-md bg-violet-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600 sm:col-start-2 disabled:opacity-25"
-                                                            //disabled={newEvent.title === ''}
+                                                            disabled={data.isEnd || (!data.isEnd && !data.isStart)}
                                                             onClick={handleButtonClick}
                                                         >
-                                                            End Of The day
+                                                            End of Work
+                                                        </button>
+
+                                                        <button
+                                                            type="submit"
+                                                            name="pause"
+                                                            value="pause"
+                                                            className="inline-flex w-full justify-center rounded-md bg-violet-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600 sm:col-start-2 disabled:opacity-25"
+                                                            disabled={!data.isStart}
+                                                            onClick={handleButtonClick}
+                                                        >
+                                                            Pause
                                                         </button>
                                                         <button
                                                             type="button"
                                                             className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
-                                                        //onClick={handleCloseModal}
+                                                            onClick={handleCloseModal}
 
                                                         >
                                                             Cancel
