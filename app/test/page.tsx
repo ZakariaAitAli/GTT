@@ -46,10 +46,8 @@ export default function Home() {
     const [data, setData] = useState({isStart: false, isEnd: false});
     const [loading, setLoading] = useState(true);
     //const [idEmployee, setIdEmployee] = useState("");
-    const idEmployee = sessionStorage.getItem("idEmployee");
-    if (idEmployee == null) {
-        window.location.href = "/login";
-    }
+    var idEmployee = 0;
+
 
     const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         const buttonValue = event.currentTarget.value;
@@ -71,6 +69,8 @@ export default function Home() {
 
 
     useEffect(() => {
+        const idEmployee = sessionStorage?.getItem("idEmployee");
+
         let draggableEl = document.getElementById('draggable-el')
         if (draggableEl) {
             new Draggable(draggableEl, {
@@ -87,10 +87,7 @@ export default function Home() {
 
     //GET REQUEST TO THE SERVER :
     useEffect(() => {
-
-
         const apiUrl = "http://localhost:8080/GestionTempsTravail_war_exploded/Servlets.workTimeServlet?idEmployee=" + idEmployee;
-
         axios
             .get(apiUrl)
             .then((response) => {
