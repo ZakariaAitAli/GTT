@@ -45,8 +45,11 @@ export default function Home() {
     const router = useRouter();
     const [data, setData] = useState({isStart: false, isEnd: false});
     const [loading, setLoading] = useState(true);
-    const [idEmployee, setIdEmployee] = useState("");
-
+    //const [idEmployee, setIdEmployee] = useState("");
+    const idEmployee = sessionStorage.getItem("idEmployee");
+    if (idEmployee == null) {
+        window.location.href = "/login";
+    }
 
     const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         const buttonValue = event.currentTarget.value;
@@ -86,7 +89,7 @@ export default function Home() {
     useEffect(() => {
 
 
-        const apiUrl = "http://localhost:8080/GestionTempsTravail_war_exploded/Servlets.workTimeServlet?idEmployee=" + sessionStorage.getItem("idEmployee");
+        const apiUrl = "http://localhost:8080/GestionTempsTravail_war_exploded/Servlets.workTimeServlet?idEmployee=" + idEmployee;
 
         axios
             .get(apiUrl)
