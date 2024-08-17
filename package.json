@@ -32,7 +32,7 @@
     "fullcalendar": "^6.1.9",
     "http-proxy-middleware": "^2.0.6",
     "mock-local-storage": "^1.1.24",
-    "next": "14.0.1",
+    "next": "14.2.5",
     "next-themes": "^0.2.1",
     "react": "^18",
     "react-chartjs-2": "^5.2.0",
